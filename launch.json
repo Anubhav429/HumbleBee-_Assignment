@@ -1,0 +1,10 @@
+{
+  "type": "pwa-node",
+  "request": "launch",
+  "name": "Debug Express API",
+  "runtimeExecutable": "nodemon",
+  "program": "${workspaceFolder}/app.js",
+  "restart": true,
+  "console": "integratedTerminal",
+  "internalConsoleOptions": "neverOpen"
+}

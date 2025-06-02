@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>🐝 BeeTrail Admin Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      color: #343a40;
+    }
+    .card {
+      background: white;
+      padding: 1rem 2rem;
+      margin: 1rem 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .card p {
+      font-size: 1.5rem;
+      color: #007bff;
+      margin: 0.5rem 0 0 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🐝 BeeTrail Admin Dashboard</h1>
+
+  <div class="card">
+    <h3>Total Hives</h3>
+    <p id="hiveCount">Loading...</p>
+  </div>
+
+  <div class="card">
+    <h3>Total Crops</h3>
+    <p id="cropCount">Loading...</p>
+  </div>
+
+  <div class="card">
+    <h3>Export Hives</h3>
+    <button onclick="downloadCSV()">Download CSV</button>
+  </div>
+  
+
+  <script>
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZjU3OWY5NGIzNmE1Yzk2MWUxMzAyNiIsInJvbGUiOiJiZWVrZWVwZXIiLCJpYXQiOjE3NDQxNDEwNDl9.Eybg6_B825VisBpo5WClfAelyLF079y2XG9f6h91u6I'; 
+
+    // Get hives count
+    fetch('/api/hives', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('hiveCount').textContent = data.length;
+    })
+    .catch(() => {
+      document.getElementById('hiveCount').textContent = 'Error';
+    });
+
+    // Get crops count
+    fetch('/api/crops/nearby?latitude=26.91&longitude=75.78&radius=100&date=2025-04-12', {
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById('cropCount').textContent = data.length;
+    })
+    .catch(() => {
+      document.getElementById('cropCount').textContent = 'Error';
+    });
+
+    //CSV Download
+    function downloadCSV() {
+    fetch('/api/hives/export', {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token
+      }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch CSV");
+      return res.blob();
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'hives.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    })
+    .catch(err => {
+      alert('Error downloading CSV: ' + err.message);
+    });
+  }
+  </script>
+</body>
+</html>
